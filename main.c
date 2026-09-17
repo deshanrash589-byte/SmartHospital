@@ -319,8 +319,65 @@ int main()
             }
 
             case 4:
-                printf("\nGenerate Patient Bill selected.\n");
+            {
+                int patientID;
+                int specialtyIndex;
+
+                float consultation;
+                float surcharge;
+                float wardCost;
+                float grossBill;
+
+                printf("\n========== GENERATE PATIENT BILL ==========\n");
+
+                if(patientCount == 0)
+                {
+                    printf("No patients registered yet.\n");
+                    break;
+                }
+                printf("Enter Patient Number: ");
+                scanf("%d", &patientID);
+
+                patientID = patientID - 1;
+
+                if(patientID < 0 || patientID >= patientCount)
+                {
+                    printf("Invalid patient number!\n");
+                    break;
+                }
+
+                specialtyIndex = patientSpecialtyID[patientID] - 1;
+
+
+                consultation = consultationFee[specialtyIndex];
+                surcharge = patientSurcharge[patientID];
+                wardCost = patientWardCost[patientID];
+
+                grossBill = consultation + surcharge + wardCost;
+
+                printf("\n------------- PATIENT BILL -------------\n");
+                printf("Patient Name       : %s\n",
+                       patientName[patientID]);
+
+                printf("Consultation Fee   : LKR %.2f\n",
+                       consultation);
+
+                printf("Emergency Surcharge: LKR %.2f\n",
+                       surcharge);
+
+                printf("Ward Stay Cost     : LKR %.2f\n",
+                       wardCost);
+
+                printf("-----------------------------------------\n");
+
+                printf("Gross Bill         : LKR %.2f\n",
+                       grossBill);
+
+                printf("-----------------------------------------\n");
+
                 break;
+
+            }
 
             case 5:
                 printf("\nPriority Patient List selected.\n");
