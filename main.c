@@ -11,6 +11,9 @@ int patientWardID[MAX_PATIENTS];
 int patientBedID[MAX_PATIENTS];
 int patientDays[MAX_PATIENTS];
 
+float patientWaitingTime[MAX_PATIENTS];
+float patientSurcharge[MAX_PATIENTS];
+
 int patientCount = 0;
 
 const int specialtyID[4] = {1, 2, 3, 4};
@@ -67,6 +70,24 @@ const int wardCapacity[4] = {
 
 int bedOccupancy[4][20] = {0};
 
+int specialtyQueueCount[4] = {0, 0, 0, 0};
+
+float calculateEmergencySurcharge(float baseFee, int emergencyLevel)
+{
+    if(emergencyLevel == 2)
+    {
+        return baseFee * 0.20f;
+    }
+    else if(emergencyLevel == 3)
+    {
+        return baseFee * 0.50f;
+    }
+    else
+    {
+        return 0.0f;
+    }
+}
+
 int main()
 {
     int choice;
@@ -121,6 +142,7 @@ int main()
 
                 printf("Enter Specialty ID: ");
                 scanf("%d", &patientSpecialtyID[i]);
+
 
                 printf("\nAdmitted to Ward?\n");
                 printf("1. Yes\n");
@@ -181,6 +203,23 @@ int main()
                   patientDays[i] = 0;
                 }
 
+               int specialtyIndex;
+
+               specialtyIndex = patientSpecialtyID[i] - 1;
+
+               patientWaitingTime[i] =
+                    specialtyQueueCount[specialtyIndex] *
+                    consultationTime[specialtyIndex];
+
+               specialtyQueueCount[specialtyIndex]++;
+
+                patientSurcharge[i] =
+                     calculateEmergencySurcharge(
+                         consultationFee[specialtyIndex],
+                         patientEmergencyLevel[i]
+                      );
+
+
                 patientCount++;
 
                 printf("\nPatient Registered Successfully!\n");
@@ -196,6 +235,10 @@ int main()
                        patientBedID[i]);
                 printf("Days Admitted: %d\n",
                        patientDays[i]);
+                printf("Waiting Time    : %.0f minutes\n",
+                       patientWaitingTime[i]);
+                printf("Surcharge       : LKR %.2f\n",
+                       patientSurcharge[i]);
 
                 break;
 
