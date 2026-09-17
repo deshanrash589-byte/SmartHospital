@@ -8,6 +8,7 @@ int patientEmergencyLevel[MAX_PATIENTS];
 int patientSpecialtyID[MAX_PATIENTS];
 int patientAdmitted[MAX_PATIENTS];
 int patientWardID[MAX_PATIENTS];
+int patientBedID[MAX_PATIENTS];
 int patientDays[MAX_PATIENTS];
 
 int patientCount = 0;
@@ -130,6 +131,10 @@ int main()
 
                 if(patientAdmitted[i] == 1)
                 {
+                     int w;
+                     int b;
+                     int bedFound = 0;
+
                      printf("\nWard\n");
                      printf("1. General Ward\n");
                      printf("2. Paediatric Ward\n");
@@ -142,10 +147,37 @@ int main()
 
                      printf("Enter Days Admitted: ");
                      scanf("%d", &patientDays[i]);
+
+                     w = patientWardID[i] - 1;
+
+                     for(b = 0; b < wardCapacity[w]; b++)
+                     {
+                         if(bedOccupancy[w][b] == 0)
+                         {
+                             bedOccupancy[w][b] = 1;
+                             patientBedID[i] = b + 1;
+                             bedFound = 1;
+
+                             printf("\nBed Assigned Successfully!\n");
+                             printf("Ward: %s\n", wardName[w]);
+                             printf("Bed Number: %d\n", patientBedID[i]);
+
+                             break;
+
+                         }
+                     }
+
+                     if(bedFound == 0)
+                     {
+                         patientBedID[i] = 0;
+                         printf("\nNo available bed in this ward!\n");
+
+                     }
                 }
                 else
                 {
                   patientWardID[i] = 0;
+                  patientBedID[i] = 0;
                   patientDays[i] = 0;
                 }
 
@@ -160,6 +192,8 @@ int main()
                        patientSpecialtyID[i]);
                 printf("Ward ID: %d\n",
                        patientWardID[i]);
+                printf("Bed ID          : %d\n",
+                       patientBedID[i]);
                 printf("Days Admitted: %d\n",
                        patientDays[i]);
 
@@ -193,6 +227,7 @@ int main()
                       if(patientAdmitted[i] == 1)
                       {
                           printf("Ward ID         : %d\n", patientWardID[i]);
+                          printf("Bed ID          : %d\n", patientBedID[i]);
                           printf("Days Admitted   : %d\n", patientDays[i]);
                       }
                    }
