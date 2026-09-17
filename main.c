@@ -12,6 +12,60 @@ int patientDays[MAX_PATIENTS];
 
 int patientCount = 0;
 
+const int specialtyID[4] = {1, 2, 3, 4};
+const char specialtyName[4][30] = {
+    "General Practice",
+    "Paediatrics",
+    "Cardiology"
+    "Neurology"
+};
+
+const float consultationFee[4] = {
+    1500.00,
+    2500.00,
+    4500.00,
+    5000.00
+};
+
+const int consultationTime[4] = {
+    15,
+    20,
+    30,
+    30
+};
+
+const int dailyPatientCap[4] = {
+    30,
+    20,
+    12,
+    10
+};
+
+const int wardID[4] = {1, 2, 3, 4};
+
+const char wardName[4][30] = {
+    "General Ward",
+    "Paediatric Ward",
+    "Surgical Ward",
+    "ICU"
+};
+
+const float wardDailyRate[4] = {
+    3000.00,
+    6000.00,
+    12000.00,
+    25000.00
+};
+
+const int wardCapacity[4] = {
+    20,
+    10,
+    10,
+    5
+};
+
+int bedOccupancy[4][20] = {0};
+
 int main()
 {
     int choice;
@@ -118,8 +172,32 @@ int main()
                 break;
 
             case 3:
-                printf("\nDisplay Bed Status selected.\n");
+            {
+                int w,b;
+
+                printf("\n========== BED STATUS ==========\n");
+
+                for(w = 0; w < 4; w++)
+                {
+                   printf("\nWard %d - %s\n", wardID[w], wardName[w]);
+                   printf("Capacity: %d beds\n", wardCapacity[w]);
+
+                   for(b = 0; b < wardCapacity[w]; b++)
+                   {
+                       if(bedOccupancy[w][b] == 0)
+                       {
+                          printf("Bed %d: Available\n", b + 1);
+                       }
+                       else
+                       {
+                         printf("Bed %d: Occupied\n", b + 1);
+                       }
+                   }
+                }
+
                 break;
+
+            }
 
             case 4:
                 printf("\nGenerate Patient Bill selected.\n");
