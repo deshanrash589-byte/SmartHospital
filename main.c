@@ -16,7 +16,7 @@ const int specialtyID[4] = {1, 2, 3, 4};
 const char specialtyName[4][30] = {
     "General Practice",
     "Paediatrics",
-    "Cardiology"
+    "Cardiology",
     "Neurology"
 };
 
@@ -168,8 +168,38 @@ int main()
             }
 
             case 2:
-                printf("\nDisplay Patients selected.\n");
+            {
+                int i;
+
+                printf("\n========== REGISTERED PATIENTS ==========\n");
+
+                if(patientCount == 0)
+                {
+                    printf("No patients registered yet.\n");
+                }
+                else
+                {
+                   for(i = 0; i < patientCount; i++)
+                   {
+                      printf("\nPatient %d\n", i + 1);
+                      printf("-----------------------------\n");
+                      printf("Name            : %s\n", patientName[i]);
+                      printf("Age             : %d\n", patientAge[i]);
+                      printf("Emergency Level : %d\n", patientEmergencyLevel[i]);
+                      printf("Specialty ID    : %d\n", patientSpecialtyID[i]);
+                      printf("Admitted        : %s\n",
+                             patientAdmitted[i] == 1 ? "Yes" : "No");
+
+                      if(patientAdmitted[i] == 1)
+                      {
+                          printf("Ward ID         : %d\n", patientWardID[i]);
+                          printf("Days Admitted   : %d\n", patientDays[i]);
+                      }
+                   }
+                }
+
                 break;
+            }
 
             case 3:
             {
