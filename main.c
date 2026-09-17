@@ -13,6 +13,7 @@ int patientDays[MAX_PATIENTS];
 
 float patientWaitingTime[MAX_PATIENTS];
 float patientSurcharge[MAX_PATIENTS];
+float patientWardCost[MAX_PATIENTS];
 
 int patientCount = 0;
 
@@ -218,7 +219,15 @@ int main()
                          consultationFee[specialtyIndex],
                          patientEmergencyLevel[i]
                       );
-
+                if(patientAdmitted[i] == 1)
+                {
+                    patientWardCost[i] =
+                    patientDays[i] * wardDailyRate[patientWardID[i] - 1];
+                }
+                else
+                {
+                    patientWardCost[i] = 0;
+                }
 
                 patientCount++;
 
@@ -239,6 +248,8 @@ int main()
                        patientWaitingTime[i]);
                 printf("Surcharge       : LKR %.2f\n",
                        patientSurcharge[i]);
+                printf("Ward Stay Cost  : LKR %.2f\n",
+                       patientWardCost[i]);
 
                 break;
 
