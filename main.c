@@ -213,6 +213,12 @@ int main()
                 printf("Enter choice: ");
                 scanf("%d", &patientAdmitted[i]);
 
+                if(patientAdmitted[i] != 0 && patientAdmitted[i] != 1)
+                {
+                    printf("Invalid choice! Enter 1 for Yes or 0 for No.\n");
+                    break;
+                }
+
                 if(patientAdmitted[i] == 1)
                 {
                      int w;
@@ -229,10 +235,29 @@ int main()
                      printf("Enter Ward ID: ");
                      scanf("%d", &patientWardID[i]);
 
+                     if(patientWardID[i] < 1 || patientWardID[i] > 4)
+                     {
+                         printf("Invalid Ward ID! Please enter 1 to 4.\n");
+                         break;
+                     }
+
                      printf("Enter Days Admitted: ");
                      scanf("%d", &patientDays[i]);
 
+                     if(patientDays[i] <= 0)
+                     {
+                         printf("Invalid number of days!\n");
+                         break;
+                     }
+
                      w = patientWardID[i] - 1;
+
+
+                     if(patientWardID[i] < 1 || patientWardID[i] > 4)
+                     {
+                         printf("Invalid Ward ID! Please enter 1 to 4.\n");
+                         break;
+                     }
 
                      for(b = 0; b < wardCapacity[w]; b++)
                      {
@@ -266,13 +291,6 @@ int main()
                 }
 
 
-               specialtyIndex = patientSpecialtyID[i] - 1;
-
-               patientWaitingTime[i] =
-                    specialtyQueueCount[specialtyIndex] *
-                    consultationTime[specialtyIndex];
-
-               specialtyQueueCount[specialtyIndex]++;
 
                 patientSurcharge[i] =
                      calculateEmergencySurcharge(
@@ -748,8 +766,9 @@ int main()
             }
 
             case 7:
-                printf("\nThank you for using Smart Hospital System.\n");
-                break;
+                printf("\nExiting Smart Hospital System...\n");
+                printf("Thank you!\n");
+                return 0;
 
             default:
                 printf("\nInvalid choice! Please try again.\n");
