@@ -89,6 +89,33 @@ float calculateEmergencySurcharge(float baseFee, int emergencyLevel)
     }
 }
 
+void printMoney(float amount)
+{
+  long totalCents = (long)(amount * 100 + 0.5f);
+  long rupees = totalCents / 100;
+  int cents = totalCents % 100;
+
+  if (rupees >= 1000000)
+  {
+     printf("%ld,%03ld,%03ld.%02d",
+            rupees / 1000000,
+            (rupees / 1000) % 1000,
+            rupees % 1000,
+            cents);
+  }
+  else if (rupees >= 1000)
+  {
+     printf("%ld,%03ld.%02d",
+            rupees / 1000,
+            rupees % 1000,
+            cents);
+  }
+  else
+  {
+      printf("%ld.%02d", rupees, cents);
+  }
+}
+
 int main()
 {
     int choice;
@@ -353,68 +380,168 @@ int main()
 
             case 4:
             {
-                int patientID;
+                int patientNumber;
+                int p;
                 int specialtyIndex;
+                int wardIndex;
 
-                float consultation;
+                float consultationFeeAmount;
                 float surcharge;
                 float wardCost;
                 float grossBill;
+                float discount;
+                float finalBill;
 
-                printf("\n========== GENERATE PATIENT BILL ==========\n");
+                int  surchargePercent;
+                const char *urgencyText;
 
                 if(patientCount == 0)
                 {
-                    printf("No patients registered yet.\n");
-                    break;
+                   printf("\nNo patients registered.\n");
+                   break;
                 }
+
+
+                printf("\n====================================================\n");
+                printf(" SMART HOSPITAL ADMISSION & BILL\n");
+                printf("====================================================\n");
+
                 printf("Enter Patient Number: ");
+                scanf("%d", &patientNumber);
 
-                if(scanf("%d", &patientID) != 1)
+                p = patientNumber - 1;
+
+
+                if(p < 0 || p >= patientCount)
                 {
-                    printf("Invalid input! Please enter a number.\n");
-
-                    while(getchar() != '\n');
-
+                    printf("\nInvalid patient number!\n");
                     break;
                 }
 
-                patientID = patientID - 1;
+                specialtyIndex = patientSpecialtyID[p] - 1;
 
-                if(patientID < 0 || patientID >= patientCount)
+
+                consultationFeeAmount = consultationFee[specialtyIndex];
+                surcharge = patientSurcharge[p];
+                wardCost = patientWardCost[p];
+
+                grossBill = consultationFeeAmount + surcharge + wardCost;
+
+                if(patientAge[p] < 5 ||
+                   patientAge[p] > 65)
                 {
-                    printf("Invalid patient number!\n");
-                    break;
+                    discount = grossBill * 0.15f;
+                }
+                else
+                {
+                    discount = 0.0f;
                 }
 
-                specialtyIndex = patientSpecialtyID[patientID] - 1;
+                finalBill = grossBill - discount;
+
+                if(patientEmergencyLevel[p] == 3)
+                {
+                    urgencyText = "Critical";
+                    surchargePercent = 50;
+                }
+                else if(patientEmergencyLevel[p] == 2)
+                {
+                    urgencyText = "Urgent";
+                    surchargePercent = 20;
+                }
+                else
+                {
+                    urgencyText = "Normal";
+                    surchargePercent = 0;
+                }
 
 
-                consultation = consultationFee[specialtyIndex];
-                surcharge = patientSurcharge[patientID];
-                wardCost = patientWardCost[patientID];
+                printf("Patient ID : PAT-%04d\n",patientNumber);
 
-                grossBill = consultation + surcharge + wardCost;
+                printf("Patient Name : Mr. %s\n",patientName[p]);
 
-                printf("\n------------- PATIENT BILL -------------\n");
-                printf("Patient Name       : %s\n",
-                       patientName[patientID]);
+                if(patientAge[p] < 5 || patientAge[p] > 65)
 
-                printf("Consultation Fee   : LKR %.2f\n",
-                       consultation);
+                {
+                    printf("Age : %d Years (15%% Subsidy Eligible)\n",
+                           patientAge[p]);
+                }
+                else
+                {
+                    printf("Age : %d Years\n",patientAge[p]);
+                }
 
-                printf("Emergency Surcharge: LKR %.2f\n",
-                       surcharge);
+                printf("Specialty : %s\n",specialtyName[specialtyIndex]);
 
-                printf("Ward Stay Cost     : LKR %.2f\n",
-                       wardCost);
 
-                printf("-----------------------------------------\n");
+                if(patientAdmitted[p] == 1)
+                {
+                    wardIndex = patientWardID[p] - 1;
 
-                printf("Gross Bill         : LKR %.2f\n",
-                       grossBill);
 
-                printf("-----------------------------------------\n");
+                    printf("Assigned Ward : %s (Bed #%02d)\n",
+                           wardName[wardIndex],
+                           patientBedID[p]);
+                }
+                else
+                {
+                    printf("Assigned Ward : Not Admitted\n");
+                }
+
+                printf("Urgency Level : Level  %d (%s)\n",
+                       patientEmergencyLevel[p],
+                       urgencyText);
+
+                printf("----------------------------------------------------------------------------------------\n");
+
+                printf("Base Consultation Fee : LKR ");
+                printMoney(consultationFeeAmount);
+                printf("\n");
+
+
+                printf("Emergency Surcharge: LKR ");
+                printMoney(surcharge);
+                printf(" (%d%%)\n", surchargePercent);
+
+                printf("Ward Stay Cost (%d Days) : LKR ",
+                       patientDays[p]);
+                printMoney(wardCost);
+                printf("\n");
+
+                printf("----------------------------------------------------------------------------------------\n");
+
+                printf("Gross Total Bill : LKR ");
+                printMoney(grossBill);
+                printf("\n");
+
+                printf("Age Subsidy Discount : LKR -");
+                printMoney(discount);
+
+                if(discount > 0)
+                {
+                   printf(" (15%%)\n");
+                }
+                else
+                {
+                    printf(" (0%%)\n");
+                }
+
+                printf("----------------------------------------------------------------------------------------\n");
+
+                printf("Final Payable Amount : LKR ");
+                printMoney(finalBill);
+                printf("\n");
+
+                printf("Estimated Waiting Time : %.2f mins",
+                       patientWaitingTime[p]);
+
+                if(patientWaitingTime[p] == 0)
+                {
+                    printf(" (Immediate Attention)");
+                }
+
+
+                printf("\n====================================================\n");
 
                 break;
 
