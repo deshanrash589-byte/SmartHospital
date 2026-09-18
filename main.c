@@ -133,6 +133,12 @@ int main()
                 printf("Enter Patient Age: ");
                 scanf("%d", &patientAge[i]);
 
+                if(patientAge[i] < 0 || patientAge[i] > 120)
+                {
+                    printf("Invalid age! Please enter age between 0 and 120.\n");
+                    break;
+                }
+
                 printf("\nEmergency Level\n");
                 printf("1. Normal\n");
                 printf("2. Urgent\n");
@@ -140,6 +146,13 @@ int main()
 
                 printf("Enter Emergency Level: ");
                 scanf("%d", &patientEmergencyLevel[i]);
+
+                if(patientEmergencyLevel[i] < 1 ||
+                   patientEmergencyLevel[i] > 3)
+                {
+                    printf("Invalid emergency level! Please enter 1, 2, or 3.\n");
+                    break;
+                }
 
                 printf("\nSpecialty\n");
                 printf("1. General Practice\n");
@@ -149,6 +162,21 @@ int main()
 
                 printf("Enter Specialty ID: ");
                 scanf("%d", &patientSpecialtyID[i]);
+
+                if(patientSpecialtyID[i] < 1 ||
+                   patientSpecialtyID[i] > 4)
+                {
+                    printf("Invalid specialty ID! Please enter 1 to 4.\n");
+                    break;
+                }
+
+                int specialtyIndex = patientSpecialtyID[i] - 1;
+
+                patientWaitingTime[i] =
+                    specialtyQueueCount[specialtyIndex] *
+                    consultationTime[specialtyIndex];
+
+                specialtyQueueCount[specialtyIndex]++;
 
 
                 printf("\nAdmitted to Ward?\n");
@@ -210,7 +238,6 @@ int main()
                   patientDays[i] = 0;
                 }
 
-               int specialtyIndex;
 
                specialtyIndex = patientSpecialtyID[i] - 1;
 
