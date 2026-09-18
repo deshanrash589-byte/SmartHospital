@@ -109,7 +109,13 @@ int main()
 
         printf("----------------------------------------\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+
+        if (scanf("%d", &choice) != 1)
+        {
+            while(getchar() != '\n');
+            choice = 0;
+            continue;
+        }
 
         switch(choice)
         {
@@ -336,7 +342,15 @@ int main()
                     break;
                 }
                 printf("Enter Patient Number: ");
-                scanf("%d", &patientID);
+
+                if(scanf("%d", &patientID) != 1)
+                {
+                    printf("Invalid input! Please enter a number.\n");
+
+                    while(getchar() != '\n');
+
+                    break;
+                }
 
                 patientID = patientID - 1;
 
