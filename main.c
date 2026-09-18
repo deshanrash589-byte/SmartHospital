@@ -380,8 +380,59 @@ int main()
             }
 
             case 5:
-                printf("\nPriority Patient List selected.\n");
+            {
+                int order[MAX_PATIENTS];
+                int i, j, temp;
+
+                printf("\n========== PRIORITY PATIENT LIST ==========\n");
+
+                if(patientCount == 0)
+                {
+                    printf("No patients registered yet.\n");
+                    break;
+                }
+
+                for(i = 0; i < patientCount; i++)
+                {
+                    order[i] = i;
+                }
+
+                for(i = 0;i < patientCount -  1; i++)
+                {
+                    for(j = 0; j < patientCount - i - 1; j++)
+                    {
+                        if(patientEmergencyLevel[order[j]] <
+                            patientEmergencyLevel[order[j + 1]])
+                        {
+                            temp = order[j];
+                            order[j] = order[j + 1];
+                            order[j + 1] = temp;
+                        }
+                    }
+                }
+
+                for(i = 0; i < patientCount; i++)
+                {
+                    int p = order[i];
+
+                    printf("\nPriority %d\n", i + 1);
+                    printf("-----------------------------\n");
+                    printf("Name            : %s\n", patientName[p]);
+                    printf("Age             : %d\n", patientAge[p]);
+                    printf("Emergency Level : %d\n", patientEmergencyLevel[p]);
+                    printf("Specialty ID    : %d\n", patientSpecialtyID[p]);
+                    printf("Waiting Time    : %.0f minutes\n",
+                           patientWaitingTime[p]);
+
+                    if(patientAdmitted[p] == 1)
+                    {
+                        printf("Ward ID         : %d\n", patientWardID[p]);
+                        printf("Bed ID          : %d\n", patientBedID[p]);
+                    }
+                }
+
                 break;
+            }
 
             case 6:
                 printf("\nReports and Analytics selected.\n");
