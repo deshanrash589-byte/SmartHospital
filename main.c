@@ -435,8 +435,96 @@ int main()
             }
 
             case 6:
-                printf("\nReports and Analytics selected.\n");
+            {
+                int i;
+                int admittedCount = 0;
+                int normalCount = 0;
+                int urgentCount = 0;
+                int criticalCount = 0;
+
+                float totalRevenue = 0.0f;
+                float totalSurcharge = 0.0f;
+                float totalWardCost = 0.0f;
+
+                printf("\n========== REPORTS AND ANALYTICS ==========\n");
+
+                if(patientCount == 0)
+                {
+                    printf("No patients registered yet.\n");
+                }
+                else
+                {
+                    for(i = 0; i < patientCount; i++)
+                    {
+                        int specialtyIndex;
+
+                        specialtyIndex = patientSpecialtyID[i]-1;
+
+                        if(patientEmergencyLevel[i]==1)
+                        {
+                            normalCount++;
+
+                        }
+                        else if (patientEmergencyLevel[i]==2)
+                        {
+                            urgentCount++;
+                        }
+
+                        else if (patientEmergencyLevel[i]==3)
+                        {
+                            criticalCount++;
+                        }
+
+                        if(patientAdmitted[i] == 1)
+                        {
+                            admittedCount++;
+
+                            totalWardCost +=
+                                 wardDailyRate[patientWardID[i] - 1] *
+                                 patientDays[i];
+                        }
+
+                        totalSurcharge += patientSurcharge[i];
+
+                        totalRevenue +=
+                            consultationFee[specialtyIndex] +
+                            patientSurcharge[i];
+
+                        if(patientAdmitted[i] ==1)
+                        {
+                            totalRevenue +=
+                               wardDailyRate[patientWardID[i] - 1] *
+                               patientDays[i];
+                        }
+                    }
+
+                    printf("\nTotal Patients       : %d\n", patientCount);
+                    printf("Admitted Patients    : %d\n", admittedCount);
+                    printf("Non-Admitted Patients: %d\n",
+                            patientCount - admittedCount);
+
+                    printf("\nEmergency Statistics\n");
+                    printf("-----------------------------\n");
+                    printf("Normal Patients      : %d\n", normalCount);
+                    printf("Urgent Patients      : %d\n", urgentCount);
+                    printf("Critical Patients    : %d\n", criticalCount);
+
+                    printf("\nFinancial Statistics\n");
+                    printf("-----------------------------\n");
+                    printf("Total Surcharge      : LKR %.2f\n",
+                            totalSurcharge);
+
+                    printf("Total Ward Cost      : LKR %.2f\n",
+                            totalWardCost);
+
+
+                    printf("Total Revenue        : LKR %.2f\n",
+                           totalRevenue);
+                }
+
                 break;
+
+            }
 
             case 7:
                 printf("\nThank you for using Smart Hospital System.\n");
