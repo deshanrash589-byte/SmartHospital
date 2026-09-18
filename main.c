@@ -437,28 +437,30 @@ int main()
             case 6:
             {
                 int i;
-                int admittedCount = 0;
                 int normalCount = 0;
                 int urgentCount = 0;
                 int criticalCount = 0;
+                int admittedCount = 0;
+
+                int occupiedBeds;
+                float occupancyPercetage;
 
                 float totalRevenue = 0.0f;
-                float totalSurcharge = 0.0f;
-                float totalWardCost = 0.0f;
+                float totalDiscount = 0.0f;
+
+                float highestBill = 0.0f;
+                int highestPatient = -1;
 
                 printf("\n========== REPORTS AND ANALYTICS ==========\n");
 
                 if(patientCount == 0)
                 {
                     printf("No patients registered yet.\n");
+                    break;
                 }
-                else
-                {
+
                     for(i = 0; i < patientCount; i++)
                     {
-                        int specialtyIndex;
-
-                        specialtyIndex = patientSpecialtyID[i]-1;
 
                         if(patientEmergencyLevel[i]==1)
                         {
@@ -479,48 +481,99 @@ int main()
                         {
                             admittedCount++;
 
-                            totalWardCost +=
-                                 wardDailyRate[patientWardID[i] - 1] *
-                                 patientDays[i];
                         }
 
-                        totalSurcharge += patientSurcharge[i];
+                    }
 
-                        totalRevenue +=
-                            consultationFee[specialtyIndex] +
-                            patientSurcharge[i];
+                    for(i = 0; i < patientCount; i++)
+                    {
+                        int specialtyIndex;
+                        float consultation;
+                        float surcharge;
+                        float wardCost;
+                        float grossBill;
+                        float discount;
+                        float finalBill;
 
-                        if(patientAdmitted[i] ==1)
+                        specialtyIndex = patientSpecialtyID[i] - 1;
+
+                        consultation = consultationFee[specialtyIndex];
+                        surcharge = patientSurcharge[i];
+                        wardCost = patientWardCost[i];
+
+                        grossBill = consultation + surcharge + wardCost;
+
+                        if(patientAge[i] < 5 || patientAge[i] > 65)
                         {
-                            totalRevenue +=
-                               wardDailyRate[patientWardID[i] - 1] *
-                               patientDays[i];
+                            discount = grossBill * 0.15f;
+                        }
+                        else
+                        {
+                            discount = 0.0f;
+                        }
+
+                        finalBill = grossBill - discount;
+
+                        totalDiscount += discount;
+                        totalRevenue += finalBill;
+
+                        if(finalBill > highestBill)
+                        {
+                            highestBill = finalBill;
+                            highestPatient = i;
                         }
                     }
 
-                    printf("\nTotal Patients       : %d\n", patientCount);
-                    printf("Admitted Patients    : %d\n", admittedCount);
-                    printf("Non-Admitted Patients: %d\n",
-                            patientCount - admittedCount);
-
-                    printf("\nEmergency Statistics\n");
-                    printf("-----------------------------\n");
+                    printf("\n----- Patient Statistics -----\n");
+                    printf("Total Patients       : %d\n", patientCount);
                     printf("Normal Patients      : %d\n", normalCount);
                     printf("Urgent Patients      : %d\n", urgentCount);
                     printf("Critical Patients    : %d\n", criticalCount);
-
-                    printf("\nFinancial Statistics\n");
-                    printf("-----------------------------\n");
-                    printf("Total Surcharge      : LKR %.2f\n",
-                            totalSurcharge);
-
-                    printf("Total Ward Cost      : LKR %.2f\n",
-                            totalWardCost);
+                    printf("Admitted Patients    : %d\n", admittedCount);
 
 
-                    printf("Total Revenue        : LKR %.2f\n",
-                           totalRevenue);
-                }
+                    printf("\n----- Financial Statistics -----\n");
+                    printf("Total Revenue        : LKR %.2f\n", totalRevenue);
+                    printf("Total Discounts      : LKR %.2f\n", totalDiscount);
+
+                    printf("\n----- Bed Occupancy -----\n");
+
+
+                    for(i = 0; i < 4; i++)
+                    {
+                        int b;
+
+                        occupiedBeds = 0;
+
+                        for(b = 0; b < wardCapacity[i]; b++)
+                        {
+                            if(bedOccupancy[i][b] == 1)
+                            {
+                                occupiedBeds++;
+                            }
+                        }
+
+                        occupancyPercetage =
+                            ((float)occupiedBeds / wardCapacity[i]) * 100;
+
+                        printf("%s: %.2f%% occupied\n",
+                                wardName[i],
+                                occupancyPercetage);
+                    }
+
+                    printf("\n----- Highest-Paying Patient -----\n");
+
+                    if(highestPatient != -1)
+                    {
+                        printf("Patient Name : %s\n",
+                               patientName[highestPatient]);
+
+                        printf("Final Bill   : LKR %.2f\n",
+                               highestBill);
+                    }
+
+
+
 
                 break;
 
