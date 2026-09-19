@@ -816,6 +816,7 @@ int main()
                 int order[MAX_PATIENTS];
                 int i, j, temp;
 
+
                 printf("\n========== PRIORITY PATIENT LIST ==========\n");
 
                 if(patientCount == 0)
@@ -860,6 +861,11 @@ int main()
                     {
                         printf("Ward ID         : %d\n", patientWardID[p]);
                         printf("Bed ID          : %d\n", patientBedID[p]);
+                    }
+                    else
+                    {
+                      printf("Ward ID         : Not Admitted\n");
+                      printf("Bed ID          : Not Assigned\n");
                     }
                 }
 
