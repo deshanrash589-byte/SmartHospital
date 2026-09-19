@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_PATIENTS 100
 
@@ -116,9 +117,203 @@ void printMoney(float amount)
   }
 }
 
+void savePatientRecords()
+{
+    FILE *file;
+    int i;
+
+    file = fopen("patient_records.txt", "a");
+    if(file == NULL)
+    {
+        printf("Error opening patient_records.txt\n");
+        return;
+    }
+
+    i = patientCount - 1;
+
+    fprintf(file, "SMART HOSPITAL PATIENT RECORDS\n");
+    fprintf(file, "========================================\n\n");
+
+    fprintf(file, "Patient %d\n", i + 1);
+    fprintf(file, "Name: %s\n", patientName[i]);
+    fprintf(file, "Age: %d\n", patientAge[i]);
+
+     fprintf(file, "Emergency Level: %d\n",
+            patientEmergencyLevel[i]);
+     fprintf(file, "Specialty ID: %d\n",
+            patientSpecialtyID[i]);
+     fprintf(file, "Admitted: %s\n",
+            patientAdmitted[i] == 1 ? "Yes" : "No");
+
+     if(patientAdmitted[i] == 1)
+     {
+         fprintf(file, "Ward ID: %d\n",
+                patientWardID[i]);
+         fprintf(file, "Bed ID: %d\n",
+                patientBedID[i]);
+         fprintf(file, "Days Admitted: %d\n",
+                patientDays[i]);
+      }
+
+      fprintf(file, "Waiting Time: %.0f minutes\n",
+             patientWaitingTime[i]);
+      fprintf(file, "Surcharge: %.2f\n",
+             patientSurcharge[i]);
+      fprintf(file, "Ward Cost: %.2f\n",
+             patientWardCost[i]);
+      fprintf(file, "----------------------------------------\n");
+
+
+      fclose(file);
+
+      printf("Patient record saved to patient_records.txt\n");
+}
+
+void saveBillingRecord(int patientNumber,
+                       float consultationFeeAmount,
+                       float surcharge,
+                       float wardCost,
+                       float grossBill,
+                       float discount,
+                       float finalBill)
+
+{
+     FILE *file;
+     int p;
+
+     p = patientNumber - 1;
+
+     file = fopen("patient_records.txt", "a");
+
+     if(file == NULL)
+     {
+         printf("Error opening patient_records.txt\n");
+         return;
+     }
+
+     fprintf(file, "\n");
+     fprintf(file, "SMART HOSPITAL BILLING RECORD\n");
+     fprintf(file, "========================================\n");
+
+     fprintf(file, "Patient ID: PAT-%04d\n", patientNumber);
+     fprintf(file, "Patient Name: %s\n", patientName[p]);
+     fprintf(file, "Age: %d\n", patientAge[p]);
+
+     fprintf(file, "Emergency Level: %d\n",
+             patientEmergencyLevel[p]);
+
+     if(patientAdmitted[p] == 1)
+     {
+         fprintf(file, "Ward: %s\n",
+                 wardName[patientWardID[p] - 1]);
+
+         fprintf(file, "Bed ID: %d\n",
+                 patientBedID[p]);
+
+         fprintf(file, "Days Admitted: %d\n",
+                 patientDays[p]);
+     }
+     else
+     {
+         fprintf(file, "Ward: Not Admitted\n");
+     }
+
+     fprintf(file, "Waiting Time: %.0f minutes\n",
+             patientWaitingTime[p]);
+
+     fprintf(file, "----------------------------------------\n");
+
+     fprintf(file, "Consultation Fee: LKR %.2f\n",
+             consultationFeeAmount);
+
+     fprintf(file, "Emergency Surcharge: LKR %.2f\n",
+             surcharge);
+
+     fprintf(file, "Ward Stay Cost: LKR %.2f\n",
+             wardCost);
+
+     fprintf(file, "Gross Total Bill: LKR %.2f\n",
+             grossBill);
+
+     fprintf(file, "Age Subsidy Discount: LKR %.2f\n",
+             discount);
+
+     fprintf(file, "Final Payable Amount: LKR %.2f\n",
+             finalBill);
+
+     fprintf(file, "========================================\n");
+
+     fclose(file);
+
+     printf("Complete billing record saved to patient_records.txt\n");
+
+}
+
+
+void saveBedStatus()
+{
+    FILE *file;
+    int w,b;
+
+    file = fopen("beds_status.txt", "w");
+
+    if(file == NULL)
+    {
+        printf("Error opening beds_status.txt\n");
+        return;
+    }
+
+
+    for(w = 0; w < 4; w++)
+    {
+        for(b = 0; b < wardCapacity[w]; b++)
+        {
+            fprintf(file, "%d %d %d\n",
+                    w + 1,
+                    b + 1,
+                    bedOccupancy[w][b]);
+         }
+    }
+
+    fclose(file);
+}
+
+
+void loadBedStatus()
+{
+    FILE *file;
+    int w, b, status;
+
+    file = fopen("beds_status.txt", "r");
+
+    if(file == NULL)
+    {
+        printf("No previous bed status found.\n");
+        return;
+    }
+
+    while(fscanf(file, "%d %d %d", &w, &b, &status) == 3)
+    {
+        if(w >= 1 && w <= 4 &&
+           b >= 1 && b <= wardCapacity[w - 1] &&
+           (status == 0 || status == 1))
+        {
+            bedOccupancy[w - 1][b - 1] = status;
+        }
+
+    }
+
+    fclose(file);
+
+    printf("Previous bed status loaded successfully.\n");
+
+}
+
 int main()
 {
     int choice;
+
+    loadBedStatus();
 
     do
     {
@@ -253,12 +448,6 @@ int main()
                      w = patientWardID[i] - 1;
 
 
-                     if(patientWardID[i] < 1 || patientWardID[i] > 4)
-                     {
-                         printf("Invalid Ward ID! Please enter 1 to 4.\n");
-                         break;
-                     }
-
                      for(b = 0; b < wardCapacity[w]; b++)
                      {
                          if(bedOccupancy[w][b] == 0)
@@ -311,6 +500,10 @@ int main()
 
                 printf("\nPatient Registered Successfully!\n");
                 printf("Patient Name: %s\n", patientName[i]);
+
+                savePatientRecords();
+                saveBedStatus();
+
                 printf("Age: %d\n", patientAge[i]);
                 printf("Emergency Level: %d\n",
                        patientEmergencyLevel[i]);
@@ -410,6 +603,8 @@ int main()
                 float discount;
                 float finalBill;
 
+                FILE *file;
+
                 int  surchargePercent;
                 const char *urgencyText;
 
@@ -474,7 +669,7 @@ int main()
                 }
 
 
-                printf("Patient ID : PAT-%04d\n",patientNumber);
+                printf("Patient ID : PAT-%04d\n",patientNumber );
 
                 printf("Patient Name : Mr. %s\n",patientName[p]);
 
@@ -506,7 +701,7 @@ int main()
                     printf("Assigned Ward : Not Admitted\n");
                 }
 
-                printf("Urgency Level : Level  %d (%s)\n",
+                printf("Urgency Level : Level %d (%s)\n",
                        patientEmergencyLevel[p],
                        urgencyText);
 
@@ -560,6 +755,57 @@ int main()
 
 
                 printf("\n====================================================\n");
+
+
+                file = fopen("patient_records.txt", "a");
+
+                if(file == NULL)
+                {
+                    printf("Error opening patient_records.txt\n");
+                }
+                else
+                {
+                    fprintf(file, "\n========================================\n");
+                    fprintf(file, "PATIENT BILL\n");
+                    fprintf(file, "========================================\n");
+
+                    fprintf(file, "Patient ID : PAT-%04d\n", patientNumber);
+                    fprintf(file, "Patient Name : Mr. %s\n", patientName[p]);
+                    fprintf(file, "Age : %d\n", patientAge[p]);
+                    fprintf(file, "Specialty : %s\n", specialtyName[specialtyIndex]);
+
+                    if(patientAdmitted[p] == 1)
+                    {
+                        fprintf(file, "Ward : %s\n", wardName[wardIndex]);
+                        fprintf(file, "Bed : %d\n", patientBedID[p]);
+                        fprintf(file, "Days : %d\n", patientDays[p]);
+                    }
+
+                    fprintf(file, "Urgency : %s\n", urgencyText);
+                    fprintf(file, "Base Consultation Fee : LKR %.2f\n",
+                            consultationFeeAmount);
+                    fprintf(file, "Emergency Surcharge : LKR %.2f\n",
+                            surcharge);
+                    fprintf(file, "Ward Stay Cost : LKR %.2f\n",
+                            wardCost);
+                    fprintf(file, "Gross Total Bill : LKR %.2f\n",
+                            grossBill);
+                    fprintf(file, "Age Subsidy Discount : LKR %.2f\n",
+                            discount);
+                    fprintf(file, "Final Payable Amount : LKR %.2f\n",
+                            finalBill);
+                    fprintf(file, "Estimated Waiting Time : %.0f minutes\n",
+                            patientWaitingTime[p]);
+
+                    fprintf(file, "========================================\n\n");
+
+                    fclose(file);
+
+                    printf("Complete patient bill saved to patient_records.txt\n");
+
+
+                }
+
 
                 break;
 
