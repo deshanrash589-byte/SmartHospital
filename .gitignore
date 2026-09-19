@@ -2,3 +2,5 @@
 obj/
 *.layout
 *.depend
+beds_status.txt
+patient_records.txt
